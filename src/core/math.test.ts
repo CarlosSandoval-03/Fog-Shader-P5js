@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cross, degToRad, dot, normalize, subtract } from "./math";
+import { add, cross, degToRad, dot, normalize, scale, subtract } from "./math";
 
 describe("degToRad", () => {
   it("turns a half turn into pi", () => {
@@ -11,7 +11,13 @@ describe("vectors", () => {
   const x = { x: 1, y: 0, z: 0 };
   const y = { x: 0, y: 1, z: 0 };
 
-  it("subtract per component", () => {
+  it("add, scale, and subtract per component", () => {
+    expect(add({ x: 1, y: 2, z: 3 }, { x: 1, y: 1, z: 1 })).toEqual({
+      x: 2,
+      y: 3,
+      z: 4,
+    });
+    expect(scale({ x: 1, y: -2, z: 3 }, 2)).toEqual({ x: 2, y: -4, z: 6 });
     expect(subtract({ x: 3, y: 2, z: 1 }, { x: 1, y: 1, z: 1 })).toEqual({
       x: 2,
       y: 1,

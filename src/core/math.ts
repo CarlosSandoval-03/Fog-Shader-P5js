@@ -30,3 +30,11 @@ export function normalize(v: Vec3): Vec3 {
   if (length === 0) return v;
   return { x: v.x / length, y: v.y / length, z: v.z / length };
 }
+
+export function add(a: Vec3, b: Vec3): Vec3 {
+  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
+}
+
+export function scale(v: Vec3, factor: number): Vec3 {
+  return { x: v.x * factor, y: v.y * factor, z: v.z * factor };
+}

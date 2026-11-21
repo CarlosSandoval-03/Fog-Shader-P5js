@@ -8,6 +8,9 @@ export const FOG_COLOR = { red: 0.8, green: 0.9, blue: 1, alpha: 1 } as const;
 // camera's near plane, 1 at its far plane.
 export const FOG_DEPTH = { near: 0.7, far: 0.9 } as const;
 
+// The sliders that tune FOG_DEPTH span the whole depth buffer.
+export const FOG_SLIDER = { min: 0, max: 1, step: 0.001, decimals: 3 } as const;
+
 export const CAMERA = {
   position: { x: 0, y: 0, z: 2 },
   target: { x: 0, y: 0, z: 0 },

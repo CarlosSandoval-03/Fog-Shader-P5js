@@ -6,14 +6,21 @@ import { degToRad } from "../core/math";
 import type { Scene } from "../core/Scene";
 import { Cube } from "../entities/Cube";
 import { buildCubeGeometry } from "../entities/cubeGeometry";
+import { FogControls } from "../ui/FogControls";
 import fogFragment from "../shaders/fog.frag?raw";
 import fogVertex from "../shaders/fog.vert?raw";
 
+// A row of textured cubes fading into the fog by their depth, with sliders for
+// the fog's depths. The camera and the projection are this scene's own
+// matrices, not p5's, so the shader sees exactly the space and depth range the
+// fog is tuned for.
 export class FogScene implements Scene {
   readonly #shader: p5.Shader;
   readonly #texture: p5.Image;
   readonly #cubes: readonly Cube[];
   #projection: Mat4;
+  // Only between enter() and exit(); without them the fog keeps its defaults.
+  #controls: FogControls | undefined;
 
   constructor(p: p5, assets: Assets) {
     this.#shader = p.createShader(fogVertex, fogFragment);
@@ -22,7 +29,9 @@ export class FogScene implements Scene {
     this.#projection = projectionFor(p.width, p.height);
   }
 
-  enter(): void {}
+  enter(p: p5): void {
+    this.#controls = new FogControls(p);
+  }
 
   update(elapsedSeconds: number): void {
     for (const cube of this.#cubes) cube.update(elapsedSeconds);
@@ -46,15 +55,18 @@ export class FogScene implements Scene {
     for (const cube of this.#cubes) cube.draw(p);
   }
 
-  exit(): void {}
+  exit(): void {
+    this.#controls?.remove();
+    this.#controls = undefined;
+  }
 
   #setSharedUniforms(): void {
     const { red, green, blue, alpha } = FOG_COLOR;
     this.#shader.setUniform("uProjection", [...this.#projection]);
     this.#shader.setUniform("uTexture", this.#texture);
     this.#shader.setUniform("uFogColor", [red, green, blue, alpha]);
-    this.#shader.setUniform("uFogNear", FOG_DEPTH.near);
-    this.#shader.setUniform("uFogFar", FOG_DEPTH.far);
+    this.#shader.setUniform("uFogNear", this.#controls?.near ?? FOG_DEPTH.near);
+    this.#shader.setUniform("uFogFar", this.#controls?.far ?? FOG_DEPTH.far);
   }
 }
 
